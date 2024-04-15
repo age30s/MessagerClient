@@ -127,5 +127,49 @@ public class GuiClient extends Application{
 
 		return scene;
 	}
+	public Scene MoreOptions(){
+
+		BorderPane borderPane = new BorderPane();
+
+
+		Label options = new Label("More Options:");
+		options.setFont(Font.font("Georgia",50));
+		options.setStyle("-fx-padding: 50 0 0 0;");
+
+		Button group = new Button("Create Group");
+		Button contact = new Button("Create Contact");
+
+		group.maxWidth(500);
+		contact.maxWidth(500);
+
+		group.minWidth(100);
+		contact.minWidth(100);
+
+		VBox vbox = new VBox(group,contact);
+		group.setAlignment(Pos.CENTER);
+		contact.setAlignment(Pos.CENTER);
+
+		vbox.setSpacing(20);
+		borderPane.setCenter(vbox);
+		borderPane.setTop(options);
+		BorderPane.setAlignment(vbox, Pos.CENTER);
+
+		// this is what sends the messages
+		// will be deleted in the future
+		// uncomment to see
+//		clientBox = new VBox(10, c1,b1,listItems2);
+//		borderPane.setBottom(clientBox);
+
+//
+		borderPane.setStyle("-fx-background-color: #b9dbf6;");
+
+
+		Scene scene = new Scene(borderPane, 700,700);
+
+		return scene;
+	}
+
+
+
 
 }
