@@ -1,4 +1,5 @@
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javafx.application.Application;
@@ -11,10 +12,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -30,7 +30,10 @@ public class GuiClient extends Application{
 	HashMap<String, Scene> sceneMap;
 	VBox clientBox;
 	Client clientConnection;
-	
+
+	ArrayList<HBox> contacts = new ArrayList<>();
+
+
 	ListView<String> listItems2;
 	
 	
@@ -121,15 +124,17 @@ public class GuiClient extends Application{
 //		borderPane.setBottom(clientBox);
 
 //
-		loginButton.setOnAction(e->{
-			Scene moreOptions = MoreOptions(primaryStage);
-			primaryStage.setScene(moreOptions);
-		});
-
 		borderPane.setStyle("-fx-background-color: #b9dbf6;");
 
+		loginButton.setOnAction(e -> {
+			Scene contscene = contactScreen(primaryStage);
+			sceneMap.put("Contactlist",contscene);
+			}
+		);
 
 		Scene scene = new Scene(borderPane, 700,700);
+
+		primaryStage.setScene(scene);
 
 		return scene;
 	}
@@ -143,6 +148,10 @@ public class GuiClient extends Application{
 
 		Button group = new Button("Create Group");
 		Button contact = new Button("Create Contact");
+
+		group.setOnAction(e ->{
+			groupScreen(primaryStage);
+		});
 
 		group.maxWidth(500);
 		contact.maxWidth(500);
@@ -166,6 +175,7 @@ public class GuiClient extends Application{
 
 		Scene scene = new Scene(borderPane, 700,700);
 
+		primaryStage.setScene(scene);
 		return scene;
 	}
 
@@ -251,10 +261,139 @@ public class GuiClient extends Application{
 		BorderPane.setAlignment(newbox, Pos.CENTER);
 		borderPane.setStyle("-fx-background-color: #b9dbf6;");
 
+
 		Scene scene = new Scene(borderPane, 700,700);
 
 		return scene;
 	}
+
+	public Scene groupScreen(Stage primaryStage){
+
+		System.out.println("ggggg");
+		BorderPane borderPane = new BorderPane();
+
+		borderPane.setStyle("-fx-background-color: #b9dbf6;");
+
+		Image DC = new Image("default-profile-photo.jpg");
+		ImageView d0 = new ImageView(DC);
+		d0.setFitHeight(100);
+		d0.setFitWidth(100);
+		d0.setPreserveRatio(true);
+
+		Button profbtn = new Button();
+		profbtn.setGraphic(d0);
+
+
+		TextField c1= new TextField("Harrison Ford");
+		c1.setEditable(false);
+		c1.setPrefHeight(40);
+		c1.setPrefWidth(250);
+
+		HBox firstcontact = new HBox(profbtn, c1);
+
+		contacts.add(firstcontact);
+		VBox contactslist = new VBox();
+
+		contactslist.setSpacing(10);
+
+		Button donebtn = new Button("Done");
+		donebtn.setPrefHeight(30);
+		donebtn.setPrefWidth(50);
+
+//		donebtn.onActionProperty(e -> {
+//			groupScreen(primaryStage);
+////		});
+
+//		Button addbtn = new Button("Add");
+
+		for(HBox contact: contacts){
+			Button addbtn = new Button("Add");
+			addbtn.setOnAction(e -> addbtn.setDisable(true));
+			contact.getChildren().add(addbtn);
+			contactslist.getChildren().add(contact);
+		}
+
+		borderPane.setCenter(contactslist);
+		borderPane.setBottom(donebtn);
+
+
+		Scene contactscene = new Scene(borderPane,700,700);
+		primaryStage.setScene(contactscene);
+		return contactscene;
+	}
+
+	public Scene contactScreen(Stage primaryStage){
+		BorderPane borderPane = new BorderPane();
+
+
+		TextField c1= new TextField("Harrison Ford");
+		c1.setEditable(false);
+		c1.setPrefHeight(40);
+		c1.setPrefWidth(250);
+
+		TextField c2= new TextField("Mahatma Ghandi");
+		c2.setEditable(false);
+		c2.setPrefHeight(40);
+		c2.setPrefWidth(250);
+
+		Image DC = new Image("default-profile-photo.jpg");
+		ImageView d0 = new ImageView(DC);
+		d0.setFitHeight(100);
+		d0.setFitWidth(100);
+		d0.setPreserveRatio(true);
+
+		Button prof2btn = new Button();
+		prof2btn.setGraphic(d0);
+		Button prof3btn = new Button();
+		prof3btn.setGraphic(d0);
+
+		HBox firstContact = new HBox(prof2btn, c1);
+		HBox secondContact = new HBox(prof3btn,  c2);
+
+
+
+		contacts.add(firstContact);
+		contacts.add(secondContact);
+
+		VBox contactslist = new VBox();
+
+		contactslist.setSpacing(10);
+
+		for(HBox contact: contacts){
+			contactslist.getChildren().add(contact);
+		}
+
+		Button createGrpBut = new Button("Create Group");
+		createGrpBut.prefHeight(200);
+		createGrpBut.prefWidth(150);
+
+		Button moreOptBut = new Button("More options");
+		moreOptBut.prefHeight(200);
+		moreOptBut.prefWidth(150);
+
+		HBox bottom = new HBox(createGrpBut,moreOptBut);
+
+		borderPane.setBottom(bottom);
+		createGrpBut.setOnAction(e -> {
+			groupScreen(primaryStage);
+		});
+
+		moreOptBut.setOnAction(e -> {
+			MoreOptions(primaryStage);
+		});
+
+
+		borderPane.setCenter(contactslist);
+		BorderPane.setAlignment(contactslist,Pos.CENTER);
+
+		borderPane.setStyle("-fx-background-color: #b9dbf6;");
+
+		Scene contactScene = new Scene(borderPane, 700,700);
+		primaryStage.setScene(contactScene);
+
+		return contactScene;
+	}
+
 
 
 
