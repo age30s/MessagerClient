@@ -20,6 +20,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+import static jdk.internal.misc.Signal.handle;
+
 public class GuiClient extends Application{
 
 	
@@ -53,7 +55,7 @@ public class GuiClient extends Application{
 		
 		sceneMap = new HashMap<String, Scene>();
 
-		sceneMap.put("client",  createClientGui());
+		sceneMap.put("client",  createClientGui(primaryStage));
 		
 		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
@@ -72,12 +74,11 @@ public class GuiClient extends Application{
 	
 
 	
-	public Scene createClientGui() {
-
-		return loginScreen();
+	public Scene createClientGui(Stage primaryStage) {
+		return loginScreen(primaryStage);
 	}
 
-	public Scene loginScreen(){
+	public Scene loginScreen(Stage primaryStage){
 
 		BorderPane borderPane = new BorderPane();
 		Button loginButton = new Button("Login");
@@ -120,6 +121,11 @@ public class GuiClient extends Application{
 //		borderPane.setBottom(clientBox);
 
 //
+		loginButton.setOnAction(e->{
+			Scene moreOptions = MoreOptions(primaryStage);
+			primaryStage.setScene(moreOptions);
+		});
+
 		borderPane.setStyle("-fx-background-color: #b9dbf6;");
 
 
@@ -127,8 +133,7 @@ public class GuiClient extends Application{
 
 		return scene;
 	}
-	public Scene MoreOptions(){
-
+	public Scene MoreOptions(Stage primaryStage){
 		BorderPane borderPane = new BorderPane();
 
 
@@ -153,22 +158,103 @@ public class GuiClient extends Application{
 		borderPane.setCenter(vbox);
 		borderPane.setTop(options);
 		BorderPane.setAlignment(vbox, Pos.CENTER);
-
-		// this is what sends the messages
-		// will be deleted in the future
-		// uncomment to see
-//		clientBox = new VBox(10, c1,b1,listItems2);
-//		borderPane.setBottom(clientBox);
-
-//
 		borderPane.setStyle("-fx-background-color: #b9dbf6;");
-
+		contact.setOnAction(e->{
+			Scene createContactScene = createContact(primaryStage);
+			primaryStage.setScene(createContactScene);
+		});
 
 		Scene scene = new Scene(borderPane, 700,700);
 
 		return scene;
 	}
 
+	public Scene createContact(Stage primaryStage){
+		BorderPane borderPane = new BorderPane();
+
+		Label options = new Label("Create a new Contact");
+		options.setFont(Font.font("Georgia",50));
+		options.setStyle("-fx-padding: 50 0 0 0;");
+		options.setAlignment(Pos.TOP_CENTER);
+
+		Button back = new Button("Back");
+		Button done = new Button("Done");
+
+		TextField name = new TextField("Enter the name");
+		TextField phone = new TextField("Enter the phone number");
+
+		back.maxWidth(500);
+		done.maxWidth(500);
+
+		back.minWidth(100);
+		done.minWidth(100);
+
+		VBox vbox = new VBox(back,name,phone,done);
+		back.setAlignment(Pos.TOP_LEFT);
+		name.setAlignment(Pos.CENTER);
+		phone.setAlignment(Pos.CENTER);
+		done.setAlignment(Pos.CENTER);
+
+		vbox.setSpacing(20);
+		borderPane.setCenter(vbox);
+		borderPane.setTop(options);
+		BorderPane.setAlignment(vbox, Pos.CENTER);
+		borderPane.setStyle("-fx-background-color: #b9dbf6;");
+
+		done.setOnAction(e->{
+			Scene groups = groupPage(primaryStage);
+			primaryStage.setScene(groups);
+		});
+
+		Scene scene = new Scene(borderPane, 700,700);
+
+		return scene;
+	}
+
+	public Scene groupPage(Stage primaryStage){
+		BorderPane borderPane = new BorderPane();
+
+		Label groupName = new Label("-----GroupName------");
+		groupName.setFont(Font.font("Georgia",50));
+		groupName.setStyle("-fx-padding: 50 0 0 0;");
+		groupName.setAlignment(Pos.TOP_CENTER);
+
+		Label label1 = new Label("Hello how are you??");
+		Label label2 = new Label("I am good how are you??");
+		TextField user = new TextField("Enter the message you want to send");
+		Button send = new Button("Send");
+		Button back = new Button("Back");
+
+		VBox vbox = new VBox(back,label1,label2);
+		back.setAlignment(Pos.TOP_LEFT);
+		label1.setAlignment(Pos.TOP_LEFT);
+		label2.setAlignment(Pos.CENTER);
+
+		user.setAlignment(Pos.CENTER);
+		send.setAlignment(Pos.CENTER);
+		vbox.setSpacing(20);
+		Label newlabel = new Label();
+		VBox newbox = new VBox(vbox,user,send);
+//		VBox newlabels = new VBox();
+		send.setOnAction(e->{
+			String text = user.getText();
+			newlabel.setAlignment(Pos.CENTER);
+			newlabel.setText(text);
+//			newlabels.getChildren().add(newlabel);
+		});
+
+		newbox.getChildren().addAll(newlabel);
+
+
+		borderPane.setCenter(newbox);
+		borderPane.setTop(groupName);
+		BorderPane.setAlignment(newbox, Pos.CENTER);
+		borderPane.setStyle("-fx-background-color: #b9dbf6;");
+
+		Scene scene = new Scene(borderPane, 700,700);
+
+		return scene;
+	}
 
 
 
