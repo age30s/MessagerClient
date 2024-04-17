@@ -361,15 +361,23 @@ public class GuiClient extends Application{
 		Button prof3btn = new Button();
 		prof3btn.setGraphic(d0);
 
-		HBox firstContact = new HBox(prof2btn, c1);
-		HBox secondContact = new HBox(prof3btn,  c2);
-
-
-
-		contacts.add(firstContact);
-		contacts.add(secondContact);
-
+//		HBox firstContact = new HBox(prof2btn, c1);
+//		HBox secondContact = new HBox(prof3btn,  c2);
 		VBox contactslist = new VBox();
+
+		System.out.println("currently" + clientConnection.message.usersOnClient.size());
+
+		for(int i = 0; i < clientConnection.message.usersOnClient.size(); i++){
+			if(clientConnection.message.usersOnClient.get(i) != null){
+				TextField d4 = new TextField(clientConnection.message.usersOnClient.get(i));
+				d4.setEditable(false);
+				d4.setPrefHeight(40);
+				d4.setPrefWidth(250);
+				HBox box = new HBox(d4);
+				contacts.add(box);
+
+			}
+		}
 
 		contactslist.setSpacing(10);
 
@@ -385,7 +393,12 @@ public class GuiClient extends Application{
 		moreOptBut.prefHeight(200);
 		moreOptBut.prefWidth(150);
 
-		HBox bottom = new HBox(createGrpBut,moreOptBut);
+		Button refresh = new Button("Refresh");
+		refresh.prefHeight(200);
+		refresh.prefWidth(150);
+
+
+		HBox bottom = new HBox(createGrpBut,moreOptBut,refresh);
 
 		borderPane.setBottom(bottom);
 		createGrpBut.setOnAction(e -> {
@@ -396,6 +409,10 @@ public class GuiClient extends Application{
 			MoreOptions(primaryStage);
 		});
 
+
+		refresh.setOnAction(e -> {
+			contactScreen(primaryStage);
+		});
 
 		borderPane.setCenter(contactslist);
 		BorderPane.setAlignment(contactslist,Pos.CENTER);

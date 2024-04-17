@@ -39,13 +39,14 @@ public class Client extends Thread{
 		while(true) {
 			 
 			try {
-			Message incomingMessage = (Message) in.readObject();
+			message = (Message)in.readObject();
 
-			System.out.println(incomingMessage.clientUser);
-			for(int i =0 ; i < incomingMessage.usersOnClient.size(); i++){
-				System.out.println("users: " +  incomingMessage.usersOnClient.get(i));
+			System.out.println("Total clients = " + message.usersOnClient.size());
+			System.out.println("incomingMessage.clientUser: " + message.clientUser);
+			for(int i =0 ; i < message.usersOnClient.size(); i++){
+				System.out.println("users: " +  message.usersOnClient.get(i));
 			}
-			callback.accept(incomingMessage);
+			callback.accept(message);
 
 			}
 			catch(Exception e) {}

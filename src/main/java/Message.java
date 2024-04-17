@@ -10,8 +10,6 @@ public class Message implements Serializable {
 
     HashMap<Integer, String> usersOnClient = new HashMap<>();
 
-//    String user;
-
 
     public Message(String user){
         this.clientUser = user;
