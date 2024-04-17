@@ -31,6 +31,8 @@ public class GuiClient extends Application{
 	VBox clientBox;
 	Client clientConnection;
 
+	Message message;
+
 	ArrayList<HBox> contacts = new ArrayList<>();
 
 
@@ -54,7 +56,8 @@ public class GuiClient extends Application{
 		
 		c1 = new TextField();
 		b1 = new Button("Send");
-		b1.setOnAction(e->{clientConnection.send(c1.getText()); c1.clear();});
+		// when send is pressed -> the message to the server
+		b1.setOnAction(e->{clientConnection.send(clientConnection.message); c1.clear();});
 		
 		sceneMap = new HashMap<String, Scene>();
 
@@ -98,6 +101,7 @@ public class GuiClient extends Application{
 		welcomelabel.setStyle("-fx-padding: 50 0 0 0;");
 
 		TextField user = new TextField("Username");
+
 		TextField pass = new TextField("Password");
 
 		user.maxWidth(500);
@@ -127,6 +131,16 @@ public class GuiClient extends Application{
 		borderPane.setStyle("-fx-background-color: #b9dbf6;");
 
 		loginButton.setOnAction(e -> {
+			clientConnection.user = user.getText();
+			System.out.println(clientConnection.user);
+
+			clientConnection.setMessage();
+
+			System.out.println(clientConnection.message);
+
+			clientConnection.send(clientConnection.message);
+
+
 			Scene contscene = contactScreen(primaryStage);
 			sceneMap.put("Contactlist",contscene);
 			}

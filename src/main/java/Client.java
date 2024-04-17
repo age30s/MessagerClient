@@ -14,7 +14,11 @@ public class Client extends Thread{
 	
 	ObjectOutputStream out;
 	ObjectInputStream in;
-	
+
+	String user = "default";
+
+	Message message;
+
 	private Consumer<Serializable> callback;
 	
 	Client(Consumer<Serializable> call){
@@ -25,7 +29,7 @@ public class Client extends Thread{
 	public void run() {
 		
 		try {
-		socketClient= new Socket("127.0.0.1",5555);
+		socketClient = new Socket("127.0.0.1",5555);
 	    out = new ObjectOutputStream(socketClient.getOutputStream());
 	    in = new ObjectInputStream(socketClient.getInputStream());
 	    socketClient.setTcpNoDelay(true);
@@ -35,18 +39,29 @@ public class Client extends Thread{
 		while(true) {
 			 
 			try {
-			String message = in.readObject().toString();
-			callback.accept(message);
+			Message incomingMessage = (Message) in.readObject();
+
+			System.out.println(incomingMessage.clientUser);
+			for(int i =0 ; i < incomingMessage.usersOnClient.size(); i++){
+				System.out.println("users: " +  incomingMessage.usersOnClient.get(i));
+			}
+			callback.accept(incomingMessage);
+
 			}
 			catch(Exception e) {}
 		}
 	
     }
-	
-	public void send(String data) {
+
+	public void setMessage(){
+		message = new Message(user);
+		System.out.println("STRING" + message.clientUser);
+	}
+
+	public void send(Message m1) {
 		
 		try {
-			out.writeObject(data);
+			out.writeObject(m1);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
