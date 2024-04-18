@@ -61,7 +61,7 @@ public class GuiClient extends Application{
 				chat.setOnAction(new ButtonClickHandler(user.toString(), primaryStage));
 
 				if(!Objects.equals(user.toString(), currUser)) {
-					System.out.println(user + " and " + currUser);
+//					System.out.println(user + " and " + currUser);
 
 					d4.setEditable(false);
 					d4.setPrefHeight(40);
@@ -165,11 +165,11 @@ public class GuiClient extends Application{
 		loginButton.setOnAction(e -> {
 					currUser = user.getText();
 					clientConnection.user = user.getText();
-					System.out.println(clientConnection.user);
+//					System.out.println(clientConnection.user);
 
 					clientConnection.setMessage();
 
-					System.out.println(clientConnection.message);
+//					System.out.println(clientConnection.message);
 
 					clientConnection.send(clientConnection.message);
 
@@ -258,18 +258,13 @@ public class GuiClient extends Application{
 		BorderPane.setAlignment(vbox, Pos.CENTER);
 		borderPane.setStyle("-fx-background-color: #b9dbf6;");
 
-//		done.setOnAction(e->{
-//			Scene groups = groupPage(primaryStage,);
-//			primaryStage.setScene(groups);
-//		});
-
 		Scene scene = new Scene(borderPane, 700,700);
 
 		return scene;
 	}
 
 	public Scene groupPage(Stage primaryStage, String toUser){
-		System.out.println("user is this " + toUser);
+//		System.out.println("user is this " + toUser);
 
 		BorderPane borderPane = new BorderPane();
 
@@ -380,7 +375,7 @@ public class GuiClient extends Application{
 		BorderPane borderPane = new BorderPane();
 
 		for(String s : users){
-			System.out.println(s);
+//			System.out.println(s);
 		}
 
 //		TextField c1= new TextField("Harrison Ford");
@@ -487,7 +482,6 @@ public class GuiClient extends Application{
 			this.user = user;
 			this.primaryStage = primaryStage;
 		}
-
 		@Override
 		public void handle(ActionEvent event) {
 			// Perform different actions based on the index of the button

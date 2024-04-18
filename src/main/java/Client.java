@@ -51,9 +51,8 @@ public class Client extends Thread{
 
 			try {
 				message = (Message)in.readObject();
-
 				System.out.println("Total clients = " + message.usersOnClient.size());
-				System.out.println("incomingMessage.clientUser: " + message.clientUser);
+//				System.out.println("incomingMessage.clientUser: " + message.clientUser);
 				for(Map.Entry<Integer,String> entry : message.usersOnClient.entrySet()){
 					int key = entry.getKey();
 					String val = entry.getValue();
@@ -69,7 +68,7 @@ public class Client extends Thread{
 	public void setMessage(){
 		System.out.println("USRRRRRR: " + user);
 		message = new Message(user);
-		System.out.println("STRING" + message.clientUser);
+//		System.out.println("STRING" + message.clientUser);
 	}
 
 	public void send(Message m1) {
