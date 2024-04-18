@@ -88,6 +88,12 @@ public class GuiClient extends Application{
 			});
 		});
 
+		clientConnection.printMessage(msg->{
+			Platform.runLater(()->{
+				listItems2.getItems().add(msg.toString());
+			});
+		});
+
 
 		clientConnection.start();
 
@@ -176,7 +182,7 @@ public class GuiClient extends Application{
 					System.out.println("Logging in as" + clientConnection.user);
 
 					clientConnection.setMessage();
-
+					clientConnection.message.login = true;
 					clientConnection.send(clientConnection.message);
 
 
@@ -270,8 +276,8 @@ public class GuiClient extends Application{
 	}
 
 	public Scene groupPage(Stage primaryStage, String toUser){
-//		System.out.println("user is this " + toUser);
-
+		System.out.println("user is this " + toUser);
+		ArrayList<Label> labels = new ArrayList<>();
 		BorderPane borderPane = new BorderPane();
 
 		Label groupName = new Label("-----Messaging------" + toUser);
@@ -300,14 +306,16 @@ public class GuiClient extends Application{
 			String text = user.getText();
 			newlabel.setAlignment(Pos.CENTER);
 			newlabel.setText(text);
+			labels.add(newlabel);
 
 			clientConnection.message.outMessage = toUser;
 			clientConnection.message.message = text;
+			System.out.println(clientConnection.message.clientUser);
 			clientConnection.send(clientConnection.message);
 //        newlabels.getChildren().add(newlabel);
 		});
 
-		newbox.getChildren().addAll(newlabel);
+		newbox.getChildren().addAll(labels);
 
 
 		borderPane.setCenter(newbox);
@@ -355,19 +363,6 @@ public class GuiClient extends Application{
 		donebtn.setPrefHeight(30);
 		donebtn.setPrefWidth(50);
 
-//     donebtn.onActionProperty(e -> {
-//        groupScreen(primaryStage);
-////       });
-
-//     Button addbtn = new Button("Add");
-
-//		for(HBox contact: contacts){
-//			Button addbtn = new Button("Add");
-//			addbtn.setOnAction(e -> addbtn.setDisable(true));
-//			contact.getChildren().add(addbtn);
-//			contactslist.getChildren().add(contact);
-//		}
-
 		borderPane.setCenter(contactslist);
 		borderPane.setBottom(donebtn);
 
@@ -380,54 +375,11 @@ public class GuiClient extends Application{
 	public Scene contactScreen(Stage primaryStage){
 		BorderPane borderPane = new BorderPane();
 
-		for(String s : users){
-//			System.out.println(s);
-		}
-
-//		TextField c1= new TextField("Harrison Ford");
-//		c1.setEditable(false);
-//		c1.setPrefHeight(40);
-//		c1.setPrefWidth(250);
-//
-//		TextField c2= new TextField("Mahatma Ghandi");
-//		c2.setEditable(false);
-//		c2.setPrefHeight(40);
-//		c2.setPrefWidth(250);
-//
-//		Image DC = new Image("default-profile-photo.jpg");
-//		ImageView d0 = new ImageView(DC);
-//		d0.setFitHeight(100);
-//		d0.setFitWidth(100);
-//		d0.setPreserveRatio(true);
-//
-//		Button prof2btn = new Button();
-//		prof2btn.setGraphic(d0);
-//		Button prof3btn = new Button();
-//		prof3btn.setGraphic(d0);
-
-//     HBox firstContact = new HBox(prof2btn, c1);
-//     HBox secondContact = new HBox(prof3btn,  c2);
-//		VBox contactslist = new VBox();
+//		for(String s : users){
+////			System.out.println(s);
+//		}
 
 		System.out.println("currently" + clientConnection.message.usersOnClient.size());
-
-//		for(Pair<Integer,String> pair : clientConnection.message.usersOnClient){
-//			if(pair.getValue() != null && !Objects.equals(pair.getValue(), clientConnection.user)){
-//				TextField d4 = new TextField(pair.getValue());
-//				d4.setEditable(false);
-//				d4.setPrefHeight(40);
-//				d4.setPrefWidth(250);
-//				HBox box = new HBox(d4);
-//				contacts.add(box);
-//
-//			}
-//		}
-
-//		contactslist.setSpacing(10);
-
-//		for(HBox contact: contacts){
-//			contactslist.getChildren().add(contact);
-//		}
 
 		Button createGrpBut = new Button("Create Group");
 		createGrpBut.prefHeight(200);

@@ -9,7 +9,7 @@ public class Message implements Serializable {
     String outMessage;
     String clientUser;
     String message;
-
+    Boolean login = false;
     HashMap<Integer, String> usersOnClient = new HashMap<>();
 
 

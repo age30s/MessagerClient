@@ -28,11 +28,12 @@ public class Client extends Thread{
 	private Consumer<Serializable> callback2;
 
 	Client(Consumer<Serializable> call){
-
 		callback = call;
 	}
 
-
+	public void printMessage(Consumer<Serializable> call){
+		callback2 = call;
+	}
 	public void run() {
 
 		try {
@@ -46,7 +47,20 @@ public class Client extends Thread{
 		while(true) {
 
 			try {
-				message = (Message)in.readObject();
+				Message tempMessage  = (Message)in.readObject();
+				System.out.println(tempMessage.clientUser + " " + tempMessage.message + " " + tempMessage.outMessage);
+
+//				message.clientUser = tempMessage.clientUser;
+
+
+				message.message = tempMessage.message;
+				System.out.println("going to else: " + message.message);
+				message.outMessage = tempMessage.outMessage;
+
+				if (message.message != null){
+					callback2.accept(message.clientUser + ":" + message.message);
+				}
+
 
 //				if(message.firstLog){
 ////					for(Map.Entry<Integer,String> entry : message.usersOnClient.entrySet()){
@@ -64,7 +78,7 @@ public class Client extends Thread{
 					String val = entry.getValue();
 					System.out.println(key + " and " + val);
 				}
-				callback.accept(message);
+				callback.accept(tempMessage);
 			}
 			catch(Exception e) {}
 		}
@@ -78,9 +92,11 @@ public class Client extends Thread{
 	}
 
 	public void send(Message m1) {
-
+		System.out.println("Client user: " + m1.clientUser + "Going to: "  + m1.outMessage);
 		try {
+
 			out.writeObject(m1);
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
