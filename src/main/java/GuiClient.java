@@ -60,17 +60,19 @@ public class GuiClient extends Application{
 
 				Message m = (Message)user;
 
-				for(Map.Entry<Integer,String> entry : m.usersOnClient.entrySet()){
-					int key = entry.getKey();
-					String val = entry.getValue();
-					System.out.println(key + " and " + val);
+				System.out.println( " Callback recieved " + m.usersOnClient.size());
 
-					TextField d4 = new TextField(val.toString());
+				for(String entry : m.usersOnClient){
+					String key = entry;
+//					String val = entry.getValue();
+//					System.out.println(key + " and " + val);
+
+					TextField d4 = new TextField(key);
 					Button chat = new Button("Chat");
-					chat.setOnAction(new ButtonClickHandler(val, primaryStage));
+					chat.setOnAction(new ButtonClickHandler(key, primaryStage));
 
-					if(!Objects.equals(val, currUser)) {
-						if(!userlist.contains(val)) {
+					if(!Objects.equals(key, currUser)) {
+						if(!userlist.contains(key)) {
 							d4.setEditable(false);
 							d4.setPrefHeight(40);
 							d4.setPrefWidth(250);
@@ -78,7 +80,7 @@ public class GuiClient extends Application{
 							box.setSpacing(20);
 							box.getChildren().add(chat);
 							contacts.getChildren().add(box);
-							userlist.add(val);
+							userlist.add(key);
 						}
 //					contactlist.add(box);
 //					userlist.add(user.toString());
@@ -102,7 +104,7 @@ public class GuiClient extends Application{
 		c1 = new TextField();
 		b1 = new Button("Send");
 		// when send is pressed -> the message to the server
-		b1.setOnAction(e->{clientConnection.send(clientConnection.message); c1.clear();});
+//		b1.setOnAction(e->{clientConnection.send(clientConnection.message ,""); c1.clear();});
 
 		sceneMap = new HashMap<String, Scene>();
 
@@ -179,11 +181,10 @@ public class GuiClient extends Application{
 					currUser = user.getText();
 					clientConnection.user = user.getText();
 
-					System.out.println("Logging in as" + clientConnection.user);
-
 					clientConnection.setMessage();
 					clientConnection.message.login = true;
-					clientConnection.send(clientConnection.message);
+
+					clientConnection.send(clientConnection.message, "","");
 
 
 					Scene contscene = contactScreen(primaryStage);
@@ -227,54 +228,13 @@ public class GuiClient extends Application{
 		borderPane.setTop(options);
 		BorderPane.setAlignment(vbox, Pos.CENTER);
 		borderPane.setStyle("-fx-background-color: #b9dbf6;");
-		contact.setOnAction(e->{
-			Scene createContactScene = createContact(primaryStage);
-			primaryStage.setScene(createContactScene);
-		});
+
 
 		Scene scene = new Scene(borderPane, 700,700);
 
 		primaryStage.setScene(scene);
 		return scene;
 	}
-
-	public Scene createContact(Stage primaryStage){
-		BorderPane borderPane = new BorderPane();
-
-		Label options = new Label("Create a new Contact");
-		options.setFont(Font.font("Georgia",50));
-		options.setStyle("-fx-padding: 50 0 0 0;");
-		options.setAlignment(Pos.TOP_CENTER);
-
-		Button back = new Button("Back");
-		Button done = new Button("Done");
-
-		TextField name = new TextField("Enter the name");
-		TextField phone = new TextField("Enter the phone number");
-
-		back.maxWidth(500);
-		done.maxWidth(500);
-
-		back.minWidth(100);
-		done.minWidth(100);
-
-		VBox vbox = new VBox(back,name,phone,done);
-		back.setAlignment(Pos.TOP_LEFT);
-		name.setAlignment(Pos.CENTER);
-		phone.setAlignment(Pos.CENTER);
-		done.setAlignment(Pos.CENTER);
-
-		vbox.setSpacing(20);
-		borderPane.setCenter(vbox);
-		borderPane.setTop(options);
-		BorderPane.setAlignment(vbox, Pos.CENTER);
-		borderPane.setStyle("-fx-background-color: #b9dbf6;");
-
-		Scene scene = new Scene(borderPane, 700,700);
-
-		return scene;
-	}
-
 	public Scene groupPage(Stage primaryStage, String toUser){
 		System.out.println("user is this " + toUser);
 		ArrayList<Label> labels = new ArrayList<>();
@@ -300,19 +260,19 @@ public class GuiClient extends Application{
 		send.setAlignment(Pos.CENTER);
 		vbox.setSpacing(20);
 		Label newlabel = new Label();
-		VBox newbox = new VBox(listItems2,user,send);
+		Button everyone = new Button("Message everyone");
+		VBox newbox = new VBox(listItems2,user,send,everyone);
 //     VBox newlabels = new VBox();
 		send.setOnAction(e->{
 			String text = user.getText();
-			newlabel.setAlignment(Pos.CENTER);
-			newlabel.setText(text);
-			labels.add(newlabel);
-
-			clientConnection.message.outMessage = toUser;
-			clientConnection.message.message = text;
-			System.out.println(clientConnection.message.clientUser);
-			clientConnection.send(clientConnection.message);
+			Message sendingMessage = new Message(currUser);
+			clientConnection.send(sendingMessage, toUser, text);
+//			System.out.println(clientConnection.message.clientUser);
+//			clientConnection.send(clientConnection.message, toUser, text);
 //        newlabels.getChildren().add(newlabel);
+		});
+		everyone.setOnAction(e->{
+			groupScreen(primaryStage);
 		});
 
 		newbox.getChildren().addAll(labels);
