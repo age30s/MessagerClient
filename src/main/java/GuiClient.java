@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import javafx.application.Application;
@@ -56,31 +57,37 @@ public class GuiClient extends Application{
 	public void start(Stage primaryStage) throws Exception {
 		clientConnection = new Client(user->{
 			Platform.runLater(()->{
-				TextField d4 = new TextField(user.toString());
-				Button chat = new Button("Chat");
-				chat.setOnAction(new ButtonClickHandler(user.toString(), primaryStage));
 
-				if(!Objects.equals(user.toString(), currUser)) {
-//					System.out.println(user + " and " + currUser);
+				Message m = (Message)user;
 
-					d4.setEditable(false);
-					d4.setPrefHeight(40);
-					d4.setPrefWidth(250);
-					HBox box = new HBox(d4);
-					box.setSpacing(20);
-					box.getChildren().add(chat);
-					contacts.getChildren().add(box);
+				for(Map.Entry<Integer,String> entry : m.usersOnClient.entrySet()){
+					int key = entry.getKey();
+					String val = entry.getValue();
+					System.out.println(key + " and " + val);
+
+					TextField d4 = new TextField(val.toString());
+					Button chat = new Button("Chat");
+					chat.setOnAction(new ButtonClickHandler(val, primaryStage));
+
+					if(!Objects.equals(val, currUser)) {
+						if(!userlist.contains(val)) {
+							d4.setEditable(false);
+							d4.setPrefHeight(40);
+							d4.setPrefWidth(250);
+							HBox box = new HBox(d4);
+							box.setSpacing(20);
+							box.getChildren().add(chat);
+							contacts.getChildren().add(box);
+							userlist.add(val);
+						}
 //					contactlist.add(box);
 //					userlist.add(user.toString());
+					}
 				}
+
 			});
 		});
 
-		clientConnection.receiveMsg(msg -> {
-			Platform.runLater(()->{
-				listItems2.getItems().add(msg.toString());
-			});
-		});
 
 		clientConnection.start();
 
@@ -165,11 +172,10 @@ public class GuiClient extends Application{
 		loginButton.setOnAction(e -> {
 					currUser = user.getText();
 					clientConnection.user = user.getText();
-//					System.out.println(clientConnection.user);
+
+					System.out.println("Logging in as" + clientConnection.user);
 
 					clientConnection.setMessage();
-
-//					System.out.println(clientConnection.message);
 
 					clientConnection.send(clientConnection.message);
 

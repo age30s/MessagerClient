@@ -13,7 +13,7 @@ public class Message implements Serializable {
     HashMap<Integer, String> usersOnClient = new HashMap<>();
 
 
-    public Message(String user){
+    Message(String user){
         this.clientUser = user;
 
     }
