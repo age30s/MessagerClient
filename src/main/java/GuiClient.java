@@ -1,12 +1,14 @@
-
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -19,67 +21,97 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Pair;
 
 import static jdk.internal.misc.Signal.handle;
 
 public class GuiClient extends Application{
 
-	
+
 	TextField c1;
 	Button b1;
 	HashMap<String, Scene> sceneMap;
 	VBox clientBox;
 	Client clientConnection;
 
-	Message message;
+//	VBox contactslist = new VBox();
 
-	ArrayList<HBox> contacts = new ArrayList<>();
+	String currUser;
+
+	VBox contacts = new VBox();
+
+	ArrayList<HBox> contactlist = new ArrayList<>();
+	ArrayList<String> userlist = new ArrayList<>();
+
+	ListView<String> listItems2 = new ListView<>();
+
+	ArrayList<String> users = new ArrayList<>();
 
 
-	ListView<String> listItems2;
-	
-	
 	public static void main(String[] args) {
 		launch(args);
 	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		clientConnection = new Client(data->{
-				Platform.runLater(()->{listItems2.getItems().add(data.toString());
+		clientConnection = new Client(user->{
+			Platform.runLater(()->{
+				TextField d4 = new TextField(user.toString());
+				Button chat = new Button("Chat");
+				chat.setOnAction(new ButtonClickHandler(user.toString(), primaryStage));
+
+				if(!Objects.equals(user.toString(), currUser)) {
+					System.out.println(user + " and " + currUser);
+
+					d4.setEditable(false);
+					d4.setPrefHeight(40);
+					d4.setPrefWidth(250);
+					HBox box = new HBox(d4);
+					box.setSpacing(20);
+					box.getChildren().add(chat);
+					contacts.getChildren().add(box);
+//					contactlist.add(box);
+//					userlist.add(user.toString());
+				}
 			});
 		});
-							
+
+		clientConnection.receiveMsg(msg -> {
+			Platform.runLater(()->{
+				listItems2.getItems().add(msg.toString());
+			});
+		});
+
 		clientConnection.start();
 
-		listItems2 = new ListView<String>();
-		
+//		listItems2 = new ListView<String>();
+
 		c1 = new TextField();
 		b1 = new Button("Send");
 		// when send is pressed -> the message to the server
 		b1.setOnAction(e->{clientConnection.send(clientConnection.message); c1.clear();});
-		
+
 		sceneMap = new HashMap<String, Scene>();
 
 		sceneMap.put("client",  createClientGui(primaryStage));
-		
+
 		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent t) {
-                Platform.exit();
-                System.exit(0);
-            }
-        });
+			@Override
+			public void handle(WindowEvent t) {
+				Platform.exit();
+				System.exit(0);
+			}
+		});
 
 
 		primaryStage.setScene(sceneMap.get("client"));
 		primaryStage.setTitle("Client");
 		primaryStage.show();
-		
-	}
-	
 
-	
+	}
+
+
+
 	public Scene createClientGui(Stage primaryStage) {
 		return loginScreen(primaryStage);
 	}
@@ -124,26 +156,27 @@ public class GuiClient extends Application{
 		// this is what sends the messages
 		// will be deleted in the future
 		// uncomment to see
-//		clientBox = new VBox(10, c1,b1,listItems2);
-//		borderPane.setBottom(clientBox);
+//     clientBox = new VBox(10, c1,b1,listItems2);
+//     borderPane.setBottom(clientBox);
 
 //
 		borderPane.setStyle("-fx-background-color: #b9dbf6;");
 
 		loginButton.setOnAction(e -> {
-			clientConnection.user = user.getText();
-			System.out.println(clientConnection.user);
+					currUser = user.getText();
+					clientConnection.user = user.getText();
+					System.out.println(clientConnection.user);
 
-			clientConnection.setMessage();
+					clientConnection.setMessage();
 
-			System.out.println(clientConnection.message);
+					System.out.println(clientConnection.message);
 
-			clientConnection.send(clientConnection.message);
+					clientConnection.send(clientConnection.message);
 
 
-			Scene contscene = contactScreen(primaryStage);
-			sceneMap.put("Contactlist",contscene);
-			}
+					Scene contscene = contactScreen(primaryStage);
+					sceneMap.put("Contactlist",contscene);
+				}
 		);
 
 		Scene scene = new Scene(borderPane, 700,700);
@@ -225,20 +258,22 @@ public class GuiClient extends Application{
 		BorderPane.setAlignment(vbox, Pos.CENTER);
 		borderPane.setStyle("-fx-background-color: #b9dbf6;");
 
-		done.setOnAction(e->{
-			Scene groups = groupPage(primaryStage);
-			primaryStage.setScene(groups);
-		});
+//		done.setOnAction(e->{
+//			Scene groups = groupPage(primaryStage,);
+//			primaryStage.setScene(groups);
+//		});
 
 		Scene scene = new Scene(borderPane, 700,700);
 
 		return scene;
 	}
 
-	public Scene groupPage(Stage primaryStage){
+	public Scene groupPage(Stage primaryStage, String toUser){
+		System.out.println("user is this " + toUser);
+
 		BorderPane borderPane = new BorderPane();
 
-		Label groupName = new Label("-----GroupName------");
+		Label groupName = new Label("-----Messaging------" + toUser);
 		groupName.setFont(Font.font("Georgia",50));
 		groupName.setStyle("-fx-padding: 50 0 0 0;");
 		groupName.setAlignment(Pos.TOP_CENTER);
@@ -258,13 +293,17 @@ public class GuiClient extends Application{
 		send.setAlignment(Pos.CENTER);
 		vbox.setSpacing(20);
 		Label newlabel = new Label();
-		VBox newbox = new VBox(vbox,user,send);
-//		VBox newlabels = new VBox();
+		VBox newbox = new VBox(listItems2,user,send);
+//     VBox newlabels = new VBox();
 		send.setOnAction(e->{
 			String text = user.getText();
 			newlabel.setAlignment(Pos.CENTER);
 			newlabel.setText(text);
-//			newlabels.getChildren().add(newlabel);
+
+			clientConnection.message.outMessage = toUser;
+			clientConnection.message.message = text;
+			clientConnection.send(clientConnection.message);
+//        newlabels.getChildren().add(newlabel);
 		});
 
 		newbox.getChildren().addAll(newlabel);
@@ -278,12 +317,13 @@ public class GuiClient extends Application{
 
 		Scene scene = new Scene(borderPane, 700,700);
 
+		primaryStage.setScene(scene);
+
 		return scene;
 	}
 
 	public Scene groupScreen(Stage primaryStage){
 
-		System.out.println("ggggg");
 		BorderPane borderPane = new BorderPane();
 
 		borderPane.setStyle("-fx-background-color: #b9dbf6;");
@@ -305,7 +345,7 @@ public class GuiClient extends Application{
 
 		HBox firstcontact = new HBox(profbtn, c1);
 
-		contacts.add(firstcontact);
+//		contacts.add(firstcontact);
 		VBox contactslist = new VBox();
 
 		contactslist.setSpacing(10);
@@ -314,18 +354,18 @@ public class GuiClient extends Application{
 		donebtn.setPrefHeight(30);
 		donebtn.setPrefWidth(50);
 
-//		donebtn.onActionProperty(e -> {
-//			groupScreen(primaryStage);
-////		});
+//     donebtn.onActionProperty(e -> {
+//        groupScreen(primaryStage);
+////       });
 
-//		Button addbtn = new Button("Add");
+//     Button addbtn = new Button("Add");
 
-		for(HBox contact: contacts){
-			Button addbtn = new Button("Add");
-			addbtn.setOnAction(e -> addbtn.setDisable(true));
-			contact.getChildren().add(addbtn);
-			contactslist.getChildren().add(contact);
-		}
+//		for(HBox contact: contacts){
+//			Button addbtn = new Button("Add");
+//			addbtn.setOnAction(e -> addbtn.setDisable(true));
+//			contact.getChildren().add(addbtn);
+//			contactslist.getChildren().add(contact);
+//		}
 
 		borderPane.setCenter(contactslist);
 		borderPane.setBottom(donebtn);
@@ -339,51 +379,54 @@ public class GuiClient extends Application{
 	public Scene contactScreen(Stage primaryStage){
 		BorderPane borderPane = new BorderPane();
 
+		for(String s : users){
+			System.out.println(s);
+		}
 
-		TextField c1= new TextField("Harrison Ford");
-		c1.setEditable(false);
-		c1.setPrefHeight(40);
-		c1.setPrefWidth(250);
+//		TextField c1= new TextField("Harrison Ford");
+//		c1.setEditable(false);
+//		c1.setPrefHeight(40);
+//		c1.setPrefWidth(250);
+//
+//		TextField c2= new TextField("Mahatma Ghandi");
+//		c2.setEditable(false);
+//		c2.setPrefHeight(40);
+//		c2.setPrefWidth(250);
+//
+//		Image DC = new Image("default-profile-photo.jpg");
+//		ImageView d0 = new ImageView(DC);
+//		d0.setFitHeight(100);
+//		d0.setFitWidth(100);
+//		d0.setPreserveRatio(true);
+//
+//		Button prof2btn = new Button();
+//		prof2btn.setGraphic(d0);
+//		Button prof3btn = new Button();
+//		prof3btn.setGraphic(d0);
 
-		TextField c2= new TextField("Mahatma Ghandi");
-		c2.setEditable(false);
-		c2.setPrefHeight(40);
-		c2.setPrefWidth(250);
-
-		Image DC = new Image("default-profile-photo.jpg");
-		ImageView d0 = new ImageView(DC);
-		d0.setFitHeight(100);
-		d0.setFitWidth(100);
-		d0.setPreserveRatio(true);
-
-		Button prof2btn = new Button();
-		prof2btn.setGraphic(d0);
-		Button prof3btn = new Button();
-		prof3btn.setGraphic(d0);
-
-//		HBox firstContact = new HBox(prof2btn, c1);
-//		HBox secondContact = new HBox(prof3btn,  c2);
-		VBox contactslist = new VBox();
+//     HBox firstContact = new HBox(prof2btn, c1);
+//     HBox secondContact = new HBox(prof3btn,  c2);
+//		VBox contactslist = new VBox();
 
 		System.out.println("currently" + clientConnection.message.usersOnClient.size());
 
-		for(int i = 0; i < clientConnection.message.usersOnClient.size(); i++){
-			if(clientConnection.message.usersOnClient.get(i) != null){
-				TextField d4 = new TextField(clientConnection.message.usersOnClient.get(i));
-				d4.setEditable(false);
-				d4.setPrefHeight(40);
-				d4.setPrefWidth(250);
-				HBox box = new HBox(d4);
-				contacts.add(box);
+//		for(Pair<Integer,String> pair : clientConnection.message.usersOnClient){
+//			if(pair.getValue() != null && !Objects.equals(pair.getValue(), clientConnection.user)){
+//				TextField d4 = new TextField(pair.getValue());
+//				d4.setEditable(false);
+//				d4.setPrefHeight(40);
+//				d4.setPrefWidth(250);
+//				HBox box = new HBox(d4);
+//				contacts.add(box);
+//
+//			}
+//		}
 
-			}
-		}
+//		contactslist.setSpacing(10);
 
-		contactslist.setSpacing(10);
-
-		for(HBox contact: contacts){
-			contactslist.getChildren().add(contact);
-		}
+//		for(HBox contact: contacts){
+//			contactslist.getChildren().add(contact);
+//		}
 
 		Button createGrpBut = new Button("Create Group");
 		createGrpBut.prefHeight(200);
@@ -400,6 +443,16 @@ public class GuiClient extends Application{
 
 		HBox bottom = new HBox(createGrpBut,moreOptBut,refresh);
 
+//		VBox contacts = new VBox();
+//		int track = 0;
+//		for(HBox box : contactlist){
+//			String usertext = userlist.get(track);
+//			Button chat = new Button("Chat");
+//			chat.setOnAction(new ButtonClickHandler(usertext, primaryStage));
+//			box.getChildren().add(chat);
+//			track++;
+//		}
+
 		borderPane.setBottom(bottom);
 		createGrpBut.setOnAction(e -> {
 			groupScreen(primaryStage);
@@ -414,8 +467,8 @@ public class GuiClient extends Application{
 			contactScreen(primaryStage);
 		});
 
-		borderPane.setCenter(contactslist);
-		BorderPane.setAlignment(contactslist,Pos.CENTER);
+		borderPane.setCenter(contacts);
+		BorderPane.setAlignment(contacts,Pos.CENTER);
 
 		borderPane.setStyle("-fx-background-color: #b9dbf6;");
 
@@ -425,7 +478,21 @@ public class GuiClient extends Application{
 		return contactScene;
 	}
 
+	class ButtonClickHandler implements EventHandler<ActionEvent> {
+		private String user;
 
+		Stage primaryStage;
 
+		public ButtonClickHandler(String user, Stage primaryStage) {
+			this.user = user;
+			this.primaryStage = primaryStage;
+		}
+
+		@Override
+		public void handle(ActionEvent event) {
+			// Perform different actions based on the index of the button
+			Scene s = groupPage(primaryStage, user);
+		}
+	}
 
 }

@@ -1,17 +1,21 @@
+import javafx.util.Pair;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 
 
 public class Client extends Thread{
 
-	
+
 	Socket socketClient;
-	
+
 	ObjectOutputStream out;
 	ObjectInputStream in;
 
@@ -20,47 +24,56 @@ public class Client extends Thread{
 	Message message;
 
 	private Consumer<Serializable> callback;
-	
+
+	private Consumer<Serializable> callback2;
+
 	Client(Consumer<Serializable> call){
-	
+
 		callback = call;
 	}
-	
+
+	public void receiveMsg(Consumer<Serializable> call){
+		callback2 = call;
+	}
+
+
 	public void run() {
-		
+
 		try {
-		socketClient = new Socket("127.0.0.1",5555);
-	    out = new ObjectOutputStream(socketClient.getOutputStream());
-	    in = new ObjectInputStream(socketClient.getInputStream());
-	    socketClient.setTcpNoDelay(true);
+			socketClient = new Socket("127.0.0.1",5555);
+			out = new ObjectOutputStream(socketClient.getOutputStream());
+			in = new ObjectInputStream(socketClient.getInputStream());
+			socketClient.setTcpNoDelay(true);
 		}
 		catch(Exception e) {}
-		
+
 		while(true) {
-			 
+
 			try {
-			message = (Message)in.readObject();
+				message = (Message)in.readObject();
 
-			System.out.println("Total clients = " + message.usersOnClient.size());
-			System.out.println("incomingMessage.clientUser: " + message.clientUser);
-			for(int i =0 ; i < message.usersOnClient.size(); i++){
-				System.out.println("users: " +  message.usersOnClient.get(i));
-			}
-			callback.accept(message);
-
+				System.out.println("Total clients = " + message.usersOnClient.size());
+				System.out.println("incomingMessage.clientUser: " + message.clientUser);
+				for(Map.Entry<Integer,String> entry : message.usersOnClient.entrySet()){
+					int key = entry.getKey();
+					String val = entry.getValue();
+					System.out.println(key + " and " + val);
+				}
+				callback.accept(message.clientUser);
 			}
 			catch(Exception e) {}
 		}
-	
-    }
+
+	}
 
 	public void setMessage(){
+		System.out.println("USRRRRRR: " + user);
 		message = new Message(user);
 		System.out.println("STRING" + message.clientUser);
 	}
 
 	public void send(Message m1) {
-		
+
 		try {
 			out.writeObject(m1);
 		} catch (IOException e) {
