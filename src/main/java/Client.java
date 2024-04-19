@@ -26,6 +26,7 @@ public class Client extends Thread{
 	private Consumer<Serializable> callback;
 
 	private Consumer<Serializable> callback2;
+	private Consumer<Serializable> callback3;
 
 	Client(Consumer<Serializable> call){
 		callback = call;
@@ -34,6 +35,10 @@ public class Client extends Thread{
 	public void printMessage(Consumer<Serializable> call){
 		callback2 = call;
 	}
+	public void printToEveryone(Consumer<Serializable> call){
+		callback3 = call;
+	}
+
 	public void run() {
 
 		try {
@@ -51,7 +56,14 @@ public class Client extends Thread{
 
 				System.out.println(" Client recieved " + tempMessage.usersOnClient.size() + " amount of clients");
 				callback.accept(tempMessage);
-				callback2.accept(tempMessage.clientUser + ": " + tempMessage.message);
+				if(tempMessage.message != null && tempMessage.isEveryone == false){
+					callback2.accept(tempMessage.clientUser + ": " + tempMessage.message);
+				}
+				if(tempMessage.message != null && tempMessage.isEveryone == true){
+					callback3.accept(tempMessage.clientUser + ": " + tempMessage.message);
+				}
+
+
 
 
 //				if(message.firstLog){
@@ -88,17 +100,17 @@ public class Client extends Thread{
 		m1.setRecipient(recipient);
 		m1.setText(text);
 
+
 		System.out.println("Client user: " + m1.clientUser + " sending " + m1.message + " Going to: "  + m1.outMessage);
 
 		Message sendingMessage = new Message(m1.clientUser);
 		sendingMessage.setText(text);
 		sendingMessage.setRecipient(recipient);
-
-
+		if (m1.isEveryone == true){
+			sendingMessage.isEveryone = true;
+		}
 		try {
-
 			out.writeObject(sendingMessage);
-
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

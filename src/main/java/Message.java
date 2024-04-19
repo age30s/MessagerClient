@@ -13,6 +13,7 @@ public class Message implements Serializable {
     Boolean login = false;
     ArrayList<String> usersOnClient = new ArrayList<>();
 
+    Boolean isEveryone = false;
     Message(String user){
         this.clientUser = user;
 

@@ -45,6 +45,7 @@ public class GuiClient extends Application{
 	ArrayList<String> userlist = new ArrayList<>();
 
 	ListView<String> listItems2 = new ListView<>();
+	ListView<String> globalChatList = new ListView<>();
 
 	ArrayList<String> users = new ArrayList<>();
 
@@ -92,7 +93,13 @@ public class GuiClient extends Application{
 
 		clientConnection.printMessage(msg->{
 			Platform.runLater(()->{
-				listItems2.getItems().add(msg.toString());
+					listItems2.getItems().add(msg.toString());
+			});
+		});
+
+		clientConnection.printToEveryone(msg->{
+			Platform.runLater(()->{
+				globalChatList.getItems().add(msg.toString());
 			});
 		});
 
@@ -274,7 +281,13 @@ public class GuiClient extends Application{
 //        newlabels.getChildren().add(newlabel);
 		});
 		everyone.setOnAction(e->{
-			groupScreen(primaryStage);
+			Message eMessage = new Message(currUser);
+			eMessage.isEveryone = true;
+			for(int i = 0; i < userlist.size(); i++){
+				String text = user.getText();
+				Message sendingMessage = new Message(currUser);
+				clientConnection.send(sendingMessage, userlist.get(i), text);
+			}
 		});
 
 		newbox.getChildren().addAll(labels);
@@ -293,6 +306,70 @@ public class GuiClient extends Application{
 		return scene;
 	}
 
+	public Scene everyOneScene(Stage primaryStage, String toUser){
+//		System.out.println("user is this " + toUser);
+		ArrayList<Label> labels = new ArrayList<>();
+		BorderPane borderPane = new BorderPane();
+
+		Label groupName = new Label("Messging everyone");
+		groupName.setFont(Font.font("Georgia",50));
+		groupName.setStyle("-fx-padding: 50 0 0 0;");
+		groupName.setAlignment(Pos.TOP_CENTER);
+
+
+		TextField user = new TextField("Enter the message you want to send");
+		Button send = new Button("Send");
+		Button back = new Button("Back");
+
+		VBox vbox = new VBox(back);
+//		back.setAlignment(Pos.TOP_LEFT);
+//		label1.setAlignment(Pos.TOP_LEFT);
+//		label2.setAlignment(Pos.CENTER);
+
+//		user.setAlignment(Pos.CENTER);
+//		send.setAlignment(Pos.CENTER);
+//		vbox.setSpacing(20);
+		Label newlabel = new Label();
+		Button everyone = new Button("Message everyone");
+		VBox newbox = new VBox(globalChatList,user,send,everyone);
+//     VBox newlabels = new VBox();
+		send.setOnAction(e->{
+			String text = user.getText();
+			user.clear();
+			Message eMessage = new Message(currUser);
+			eMessage.isEveryone = true;
+
+//			for(int i = 0; i < userlist.size(); i++){
+
+				clientConnection.send(eMessage, "", text);
+
+//			}
+		});
+//		everyone.setOnAction(e->{
+//			Message eMessage = new Message(currUser);
+//			eMessage.isEveryone = true;
+//			for(int i = 0; i < userlist.size(); i++){
+//				String text = user.getText();
+//				Message sendingMessage = new Message(currUser);
+//				clientConnection.send(sendingMessage, userlist.get(i), text);
+//			}
+//		});
+
+		newbox.getChildren().addAll(labels);
+
+
+		borderPane.setCenter(newbox);
+		borderPane.setTop(groupName);
+		BorderPane.setAlignment(newbox, Pos.CENTER);
+		borderPane.setStyle("-fx-background-color: #b9dbf6;");
+
+
+		Scene scene = new Scene(borderPane, 700,700);
+
+		primaryStage.setScene(scene);
+
+		return scene;
+	}
 	public Scene groupScreen(Stage primaryStage){
 
 		BorderPane borderPane = new BorderPane();
@@ -355,8 +432,10 @@ public class GuiClient extends Application{
 		refresh.prefHeight(200);
 		refresh.prefWidth(150);
 
-
-		HBox bottom = new HBox(createGrpBut,moreOptBut,refresh);
+		Button everyone = new Button("Message everyone");
+		everyone.prefHeight(200);
+		everyone.prefWidth(150);
+		HBox bottom = new HBox(createGrpBut,moreOptBut,refresh,everyone);
 
 //		VBox contacts = new VBox();
 //		int track = 0;
@@ -380,6 +459,10 @@ public class GuiClient extends Application{
 
 		refresh.setOnAction(e -> {
 			contactScreen(primaryStage);
+		});
+
+		everyone.setOnAction(e -> {
+			everyOneScene(primaryStage,"");
 		});
 
 		borderPane.setCenter(contacts);
