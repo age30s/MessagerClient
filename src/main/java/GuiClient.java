@@ -46,6 +46,7 @@ public class GuiClient extends Application{
 
 	ListView<String> listItems2 = new ListView<>();
 	ListView<String> globalChatList = new ListView<>();
+	String messageException;
 
 	ArrayList<String> users = new ArrayList<>();
 
@@ -175,7 +176,11 @@ public class GuiClient extends Application{
 		borderPane.setTop(welcomelabel);
 		BorderPane.setAlignment(vbox, Pos.CENTER);
 
-		// this is what sends the messages
+		Label reEnterUSer = new Label();
+		reEnterUSer.setVisible(false);
+		vbox.getChildren().add(reEnterUSer);
+
+
 		// will be deleted in the future
 		// uncomment to see
 //     clientBox = new VBox(10, c1,b1,listItems2);
@@ -187,15 +192,27 @@ public class GuiClient extends Application{
 		loginButton.setOnAction(e -> {
 					currUser = user.getText();
 					clientConnection.user = user.getText();
-
 					clientConnection.setMessage();
 					clientConnection.message.login = true;
-
 					clientConnection.send(clientConnection.message, "","");
+					clientConnection.printException(msg->{
+						Platform.runLater(()->{
+							Message newM = (Message) msg;
+							System.out.println("newM.exception = " + newM.exception);
+							if(newM.exception == null){
+								Scene contscene = contactScreen(primaryStage);
+								sceneMap.put("Contactlist",contscene);
+							}else{
+								System.out.println("Why not here??");
+								reEnterUSer.setText(newM.exception);
+								reEnterUSer.setFont(Font.font("Georgia",50));
+								reEnterUSer.setStyle("-fx-padding: 50 0 0 0;");
+								reEnterUSer.setVisible(true);
 
-
-					Scene contscene = contactScreen(primaryStage);
-					sceneMap.put("Contactlist",contscene);
+							}
+//							globalChatList.getItems().add(msg.toString());
+						});
+					});
 				}
 		);
 
@@ -322,13 +339,6 @@ public class GuiClient extends Application{
 		Button back = new Button("Back");
 
 		VBox vbox = new VBox(back);
-//		back.setAlignment(Pos.TOP_LEFT);
-//		label1.setAlignment(Pos.TOP_LEFT);
-//		label2.setAlignment(Pos.CENTER);
-
-//		user.setAlignment(Pos.CENTER);
-//		send.setAlignment(Pos.CENTER);
-//		vbox.setSpacing(20);
 		Label newlabel = new Label();
 		Button everyone = new Button("Message everyone");
 		VBox newbox = new VBox(globalChatList,user,send,everyone);

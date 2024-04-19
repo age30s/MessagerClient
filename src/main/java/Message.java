@@ -12,6 +12,7 @@ public class Message implements Serializable {
     String message;
     Boolean login = false;
     ArrayList<String> usersOnClient = new ArrayList<>();
+    String exception;
 
     Boolean isEveryone = false;
     Message(String user){

@@ -27,6 +27,7 @@ public class Client extends Thread{
 
 	private Consumer<Serializable> callback2;
 	private Consumer<Serializable> callback3;
+	private Consumer<Serializable> callback4;
 
 	Client(Consumer<Serializable> call){
 		callback = call;
@@ -37,6 +38,9 @@ public class Client extends Thread{
 	}
 	public void printToEveryone(Consumer<Serializable> call){
 		callback3 = call;
+	}
+	public void printException(Consumer<Serializable> call){
+		callback4 = call;
 	}
 
 	public void run() {
@@ -55,13 +59,19 @@ public class Client extends Thread{
 				Message tempMessage  = (Message)in.readObject();
 
 				System.out.println(" Client recieved " + tempMessage.usersOnClient.size() + " amount of clients");
+
+				callback4.accept(tempMessage);
 				callback.accept(tempMessage);
+
 				if(tempMessage.message != null && tempMessage.isEveryone == false){
 					callback2.accept(tempMessage.clientUser + ": " + tempMessage.message);
 				}
 				if(tempMessage.message != null && tempMessage.isEveryone == true){
 					callback3.accept(tempMessage.clientUser + ": " + tempMessage.message);
 				}
+
+
+
 
 
 
@@ -106,6 +116,7 @@ public class Client extends Thread{
 		Message sendingMessage = new Message(m1.clientUser);
 		sendingMessage.setText(text);
 		sendingMessage.setRecipient(recipient);
+		sendingMessage.exception = null;
 		if (m1.isEveryone == true){
 			sendingMessage.isEveryone = true;
 		}
