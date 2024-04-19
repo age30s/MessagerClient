@@ -1,5 +1,5 @@
-Message.class
 Client.class
+GuiClient.class
+Message.class
 GuiClient$1.class
 GuiClient$ButtonClickHandler.class
-GuiClient.class

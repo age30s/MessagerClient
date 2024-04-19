@@ -9,6 +9,9 @@ public class Message implements Serializable {
     static final long serialVersionUID = 42L;
     String outMessage;
     String clientUser;
+
+    ArrayList<String> grpList = new ArrayList<>();
+    Boolean grpMsg = false;
     String message;
     Boolean login = false;
     ArrayList<String> usersOnClient = new ArrayList<>();

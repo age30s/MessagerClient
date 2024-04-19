@@ -5,8 +5,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 
@@ -28,6 +30,7 @@ public class Client extends Thread{
 	private Consumer<Serializable> callback2;
 	private Consumer<Serializable> callback3;
 	private Consumer<Serializable> callback4;
+	private Consumer<Serializable>  callback5;
 
 	Client(Consumer<Serializable> call){
 		callback = call;
@@ -41,6 +44,10 @@ public class Client extends Thread{
 	}
 	public void printException(Consumer<Serializable> call){
 		callback4 = call;
+	}
+
+	public void printToGroup(Consumer<Serializable> call){
+		callback5 = call;
 	}
 
 	public void run() {
@@ -60,6 +67,10 @@ public class Client extends Thread{
 
 				System.out.println(" Client recieved " + tempMessage.usersOnClient.size() + " amount of clients");
 
+				if(tempMessage.grpMsg){
+					callback5.accept(tempMessage.message);
+				}
+
 				callback4.accept(tempMessage);
 				callback.accept(tempMessage);
 
@@ -70,28 +81,6 @@ public class Client extends Thread{
 					callback3.accept(tempMessage.clientUser + ": " + tempMessage.message);
 				}
 
-
-
-
-
-
-
-//				if(message.firstLog){
-////					for(Map.Entry<Integer,String> entry : message.usersOnClient.entrySet()){
-////						int key = entry.getKey();
-////						String val = entry.getValue();
-////						System.out.println(key + " and " + val);
-////					}
-//					callback.accept(message);
-//				}
-
-//				System.out.println("Total clients = " + message.usersOnClient.size());
-//				System.out.println("incomingMessage.clientUser: " + message.clientUser);
-//				for(Map.Entry<Integer,String> entry : message.usersOnClient.entrySet()){
-//					int key = entry.getKey();
-//					String val = entry.getValue();
-//					System.out.println(key + " and " + val);
-//				}
 
 			}
 			catch(Exception e) {}
@@ -105,7 +94,7 @@ public class Client extends Thread{
 		System.out.println("STRING" + message.clientUser);
 	}
 
-	public void send(Message m1, String recipient, String text) {
+	public void send(Message m1, String recipient, String text, ArrayList<String> list) {
 //		m1.outMessage = recipient.toString();
 		m1.setRecipient(recipient);
 		m1.setText(text);
@@ -114,9 +103,15 @@ public class Client extends Thread{
 		System.out.println("Client user: " + m1.clientUser + " sending " + m1.message + " Going to: "  + m1.outMessage);
 
 		Message sendingMessage = new Message(m1.clientUser);
+		if(Objects.equals(recipient, "group") && list != null){
+			sendingMessage.grpMsg = true;
+			sendingMessage.grpList = list;
+		}
+
 		sendingMessage.setText(text);
 		sendingMessage.setRecipient(recipient);
 		sendingMessage.exception = null;
+
 		if (m1.isEveryone == true){
 			sendingMessage.isEveryone = true;
 		}
