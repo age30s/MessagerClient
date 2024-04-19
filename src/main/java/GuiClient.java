@@ -265,6 +265,8 @@ public class GuiClient extends Application{
 //     VBox newlabels = new VBox();
 		send.setOnAction(e->{
 			String text = user.getText();
+			user.clear();
+			listItems2.getItems().add("You: "+ text);
 			Message sendingMessage = new Message(currUser);
 			clientConnection.send(sendingMessage, toUser, text);
 //			System.out.println(clientConnection.message.clientUser);
