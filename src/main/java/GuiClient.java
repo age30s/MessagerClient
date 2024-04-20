@@ -21,6 +21,8 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Pair;
 
+import javax.sound.midi.SysexMessage;
+
 import static jdk.internal.misc.Signal.handle;
 
 public class GuiClient extends Application{
@@ -238,11 +240,13 @@ public class GuiClient extends Application{
 								sceneMap.put("Contactlist",contscene);
 							}
 							else if(newM.exception != null){
+
 								reEnterUSer.setText(newM.exception);
 								reEnterUSer.setFont(Font.font("Georgia",20));
 								reEnterUSer.setStyle("-fx-padding: 50 0 0 0;");
 								reEnterUSer.setVisible(true);
 							}
+
 						});
 					});
 				}

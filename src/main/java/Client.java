@@ -69,7 +69,8 @@ public class Client extends Thread{
 					callback5.accept(tempMessage.message);
 				}
 
-				if(tempMessage.login || Objects.equals(tempMessage.exception, "closed")) {
+				if(tempMessage.login || Objects.equals(tempMessage.exception, "closed")  || Objects.equals(tempMessage.exception, "Username already exists. Please select another username.")){
+
 					callback4.accept(tempMessage);
 				}
 
