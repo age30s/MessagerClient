@@ -71,12 +71,16 @@ public class Client extends Thread{
 					callback5.accept(tempMessage.message);
 				}
 
-				callback4.accept(tempMessage);
+				if(tempMessage.login) {
+					callback4.accept(tempMessage);
+				}
+
 				callback.accept(tempMessage);
 
 				if(tempMessage.message != null && tempMessage.isEveryone == false){
-					callback2.accept(tempMessage.clientUser + ": " + tempMessage.message);
+					callback2.accept(tempMessage);
 				}
+
 				if(tempMessage.message != null && tempMessage.isEveryone == true){
 					callback3.accept(tempMessage.clientUser + ": " + tempMessage.message);
 				}
@@ -103,6 +107,10 @@ public class Client extends Thread{
 		System.out.println("Client user: " + m1.clientUser + " sending " + m1.message + " Going to: "  + m1.outMessage);
 
 		Message sendingMessage = new Message(m1.clientUser);
+		if(m1.login){
+			sendingMessage.login = true;
+		}
+
 		if(Objects.equals(recipient, "group") && list != null){
 			sendingMessage.grpMsg = true;
 			sendingMessage.grpList = list;
@@ -115,6 +123,7 @@ public class Client extends Thread{
 		if (m1.isEveryone == true){
 			sendingMessage.isEveryone = true;
 		}
+
 		try {
 			out.writeObject(sendingMessage);
 		} catch (IOException e) {
