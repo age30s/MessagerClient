@@ -65,13 +65,11 @@ public class Client extends Thread{
 			try {
 				Message tempMessage  = (Message)in.readObject();
 
-				System.out.println(" Client recieved " + tempMessage.usersOnClient.size() + " amount of clients");
-
 				if(tempMessage.grpMsg){
 					callback5.accept(tempMessage.message);
 				}
 
-				if(tempMessage.login) {
+				if(tempMessage.login || Objects.equals(tempMessage.exception, "closed")) {
 					callback4.accept(tempMessage);
 				}
 
@@ -93,18 +91,14 @@ public class Client extends Thread{
 	}
 
 	public void setMessage(){
-		System.out.println("USRRRRRR: " + user);
+
 		message = new Message(user);
-		System.out.println("STRING" + message.clientUser);
+
 	}
 
 	public void send(Message m1, String recipient, String text, ArrayList<String> list) {
-//		m1.outMessage = recipient.toString();
 		m1.setRecipient(recipient);
 		m1.setText(text);
-
-
-		System.out.println("Client user: " + m1.clientUser + " sending " + m1.message + " Going to: "  + m1.outMessage);
 
 		Message sendingMessage = new Message(m1.clientUser);
 		if(m1.login){

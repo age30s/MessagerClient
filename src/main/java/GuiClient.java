@@ -32,8 +32,6 @@ public class GuiClient extends Application{
 	VBox clientBox;
 	Client clientConnection;
 
-//	VBox contactslist = new VBox();
-
 	String currUser;
 
 	VBox contacts = new VBox();
@@ -109,7 +107,11 @@ public class GuiClient extends Application{
 					}
 				}
 
-				for(Map.Entry<String,ListView<String>> entry: listItems2.entrySet()){
+				Map<String,ListView<String>> copied = new HashMap<>();
+
+				copied.putAll(listItems2);
+
+				for(Map.Entry<String,ListView<String>> entry: copied.entrySet()){
 					if(!userlist.contains(entry.getKey())){
 						listItems2.remove(entry.getKey(),entry.getValue());
 					}
@@ -118,23 +120,12 @@ public class GuiClient extends Application{
 			});
 		});
 
-		// array of listviews
-		// in each listview - > every current user on the server - > should be listview, check if user exists when useronserver sent
-		// add new listview if not
 		clientConnection.printMessage(msg->{
 			Platform.runLater(()->{
 					Message m = (Message) msg;
 
 					ListView<String> printHere = listItems2.get(m.clientUser);
 					printHere.getItems().add(m.clientUser + ": " + m.message);
-//					if(Objects.equals(m.outMessage, null)){
-//						ListView<String> l =  new ListView<String>();
-//						listItems2.putIfAbsent(m.clientUser, l);
-//					}
-//					else if(m.message != null){
-//						ListView<String> lView = listItems2.get(m.clientUser);
-//						lView.getItems().add(m.clientUser.toString() + ": " + m.outMessage);
-//					}
 
 			});
 		});
@@ -200,7 +191,6 @@ public class GuiClient extends Application{
 
 		welcomelabel.setPadding(new Insets(100,0,0,0));
 		welcomelabel.setAlignment(Pos.CENTER);
-//		welcomelabel.setStyle("-fx-font-weight:10");
 
 		TextField user = new TextField("Username");
 
@@ -240,6 +230,10 @@ public class GuiClient extends Application{
 						Platform.runLater(()->{
 							Message newM = (Message) msg;
 							if(newM.exception == null && newM.login){
+								Scene contscene = contactScreen(primaryStage);
+								sceneMap.put("Contactlist",contscene);
+							}
+							else if(Objects.equals(newM.exception, "closed")){
 								Scene contscene = contactScreen(primaryStage);
 								sceneMap.put("Contactlist",contscene);
 							}
@@ -396,7 +390,6 @@ public class GuiClient extends Application{
 	}
 
 	public Scene everyOneScene(Stage primaryStage, String toUser){
-//		System.out.println("user is this " + toUser);
 		ArrayList<Label> labels = new ArrayList<>();
 		BorderPane borderPane = new BorderPane();
 
@@ -410,11 +403,10 @@ public class GuiClient extends Application{
 		Button send = new Button("Send");
 
 
-		Label newlabel = new Label();
 		Button back = new Button("Back");
 		HBox thing = new HBox(back,send);
 		VBox newbox = new VBox(globalChatList,user,thing);
-//     VBox newlabels = new VBox();
+
 		send.setOnAction(e->{
 			String text = user.getText();
 			user.clear();
@@ -424,7 +416,6 @@ public class GuiClient extends Application{
 
 				clientConnection.send(eMessage, "", text, null);
 
-//			}
 		});
 
 		back.setOnAction((e->{
@@ -432,7 +423,6 @@ public class GuiClient extends Application{
 		}));
 
 		newbox.getChildren().addAll(labels);
-
 
 		borderPane.setCenter(newbox);
 		borderPane.setTop(groupName);
@@ -479,7 +469,7 @@ public class GuiClient extends Application{
 				i = 0;
 				copiedHbox.setSpacing(20);
 				for (Node child : hBox.getChildren()) {
-//					// Do something with each child of the HBox
+
 					if (i == 0){
 						TextField clientName = (TextField) child;
 
@@ -531,10 +521,6 @@ public class GuiClient extends Application{
 
 	public Scene contactScreen(Stage primaryStage){
 		BorderPane borderPane = new BorderPane();
-
-
-		System.out.println("currently" + clientConnection.message.usersOnClient.size());
-
 
 		Button everyone = new Button("Message everyone");
 		everyone.prefHeight(200);
